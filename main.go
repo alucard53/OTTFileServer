@@ -1,41 +1,11 @@
 package main
 
 import (
-	"FileServer/handlers"
 	"log"
 	"net/http"
 	"os"
-)
 
-func main() {
-	l := log.New(os.Stdout, "-", log.Default().Flags())
-
-	StreamHandler := handlers.NewStreamHandler(l)
-
-	sm := http.NewServeMux()
-
-	sm.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "test.html")
-	})
-
-	sm.Handle("/video", StreamHandler)
-
-	server := http.Server{
-		Addr:    ":5000",
-		Handler: sm,
-	}
-
-	server.ListenAndServe()
-}
-
-//gin version
-/*
-package main
-
-import (
-	"log"
-	"net/http"
-	"os"
+	"FileServer/files"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,8 +13,19 @@ import (
 func main() {
 	router := gin.Default()
 
-	router.GET("/video", func(ctx *gin.Context) {
-		file, err := os.Open("./files/Cure.mp4")
+	router.GET("/video/:id", func(ctx *gin.Context) {
+
+		id := ctx.Param("id")
+		movie, err := files.FileList.Search(id)
+
+		log.Println(movie, err)
+
+		if err != nil {
+			ctx.Status(http.StatusNotFound)
+			return
+		}
+
+		file, err := os.Open(movie)
 
 		if err != nil {
 			log.Println(err)
@@ -66,4 +47,3 @@ func main() {
 
 	router.Run(":5000")
 }
-*/

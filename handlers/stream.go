@@ -61,7 +61,7 @@ func (s Stream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//for when users seek videos to a particular point
+	//seek
 	rangeParts := strings.Split(rangeHeader, "=")
 	if len(rangeParts) != 2 || rangeParts[0] != "bytes" {
 		s.handleErr(files.RangeError, w)
